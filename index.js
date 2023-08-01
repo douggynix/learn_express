@@ -1,3 +1,5 @@
+const Note = require('./model/note')
+
 const express = require('express')
 const app = express()
 
@@ -19,6 +21,7 @@ const requestLogger =(request,response,next) => {
 
 app.use(requestLogger)
 
+
 let notes = [
   {
     id: 1,
@@ -39,24 +42,16 @@ let notes = [
 
 
 app.get('/api/notes',(request, response) => {
+    Note.find({}).then(notes => {
         response.json(notes)
+      })       
 })
 
 app.get('/api/notes/:id',(request, response) =>  {
-    const id = Number(request.params.id)
-    const note = notes.find(note => {
-        console.log(note.id, typeof note.id, id, typeof id, note.id === id)
-        return note.id === id
-    })
-    console.log('Search Result: ',note)
-    if(note){
+    Note.findById(request.params.id).then( note => {
         response.json(note)
-    }
-    else{
-        response.status(404).send("Not Found")
-    }
-}
-)
+    })
+})
 
 const generateId = () => {
 
@@ -70,17 +65,16 @@ const generateId = () => {
 
 
 app.post('/api/notes', (request,response) =>{
-    const note = request.body
-    console.log(note)
-    const newNote = {
-        id: generateId(),
-        content: note.content,
-        important: note.important || false,
-    }
-    notes=notes.concat(newNote)
-    response.json(newNote);
-}
-)
+    const body = request.body
+    console.log(body)
+    const note = new Note({
+        content: body.content,
+        important: body.important || false,
+    })
+    note.save().then(savedNote =>{
+        response.json(savedNote)
+    })  
+})
 
 
 const PORT = process.env.PORT || 3001
