@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const process = require("node:process")
 
 mongoose.set("strictQuery", false)
 

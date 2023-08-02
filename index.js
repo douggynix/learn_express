@@ -1,7 +1,5 @@
 const Note = require("./model/note")
 
-const process = require("node:process")
-
 const express = require("express")
 const app = express()
 
